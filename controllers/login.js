@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const { emailTransporter } = require('../utils/email')
 const generateVerificationCode = require('../utils/generateVerificationCode')
+const { default: axios } = require('axios')
+const { response } = require('express')
 
 // Función para loguear al usuario
 const login = async (req, res) => {
@@ -289,6 +291,39 @@ const sendVerificationCode = async (email, token, code) => {
   })
 }
 
+const validateCaptcha = async (req, res) => {
+  const {token } = req.body;
+  if(!token){
+    return res.status(400).json({
+      success: false,
+      message: 'Token de captcha es requerido'
+    })
+  }
+
+  const response = await axios.post(
+    `https://www.google.com/recaptcha/api/siteverify`,
+    null,{
+      params: {
+        secret: process.env.RECAPTCHA_SECRET_KEY,
+        response: token,
+      }
+    }
+  )
+
+  if(response.data.success){
+    return res.status(200).json({
+      success: true,
+      message: 'validación de captcha exitosa'
+    })
+  }else{
+    return res.status(400).json({
+      success: false,
+      message: 'validación captcha fallida'
+    })
+  }
+
+}
+
 module.exports = {
   login,
   sendRecover,
@@ -296,4 +331,5 @@ module.exports = {
   updatePassword,
   sendRegisterCode,
   validateCode,
+  validateCaptcha,
 }

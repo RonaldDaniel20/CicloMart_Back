@@ -23,6 +23,7 @@ const {
   updatePassword,
   sendRegisterCode,
   validateCode,
+  validateCaptcha
 } = require('../controllers/login.js')
 
 // Controladores transaccion
@@ -103,6 +104,7 @@ router.get('/verifyToken/:token', verifyToken)
 router.post('/updatePassword', updatePassword)
 router.post('/sendRegisterCode', sendRegisterCode)
 router.post('/validateCode', validateCode)
+router.post('/validateCaptcha', validateCaptcha)
 
 // Rutas de transacciones
 router.get('/transacciones', getTransacciones)
