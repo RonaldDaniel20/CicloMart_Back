@@ -7,6 +7,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const morgan = require('morgan') // Middleware para mostrar los logs de las solicitudes
+const rateLimt = require('express-rate-limit')
 
 // Crear la aplicación de express
 const app = express()
@@ -17,6 +18,17 @@ const corsOptions = {
   origin: process.env.FRONTEND_URL,
   optionsSuccessStatus: 200,
 }
+
+//Limitación de número de solicitudes por ip
+const limiter = rateLimt({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Demasiadas solicitudes desde está IP, intentalo nuevamente más tarde'
+})
+
+app.use(limiter)
+
+
 app.use(cors(corsOptions))
 
 // Muestra los logs de las solicitudes en la consola
